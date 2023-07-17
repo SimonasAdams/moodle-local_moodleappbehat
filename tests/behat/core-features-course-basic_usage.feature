@@ -450,7 +450,7 @@ Feature: Test basic usage of one course in app
     And I switch to the browser tab opened by the app
     And I log in as "teacher1"
     And I click on "Participants" "link"
-    And I select "Enrolment methods" from the "jump" singleselect
+    And I set the field "Participants tertiary navigation" to "Enrolment methods"
     And I click on "Enable" "icon" in the "Guest access" "table_row"
     And I close the browser tab opened by the app
     Given I entered the app as "student2"
