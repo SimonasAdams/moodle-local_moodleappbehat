@@ -166,6 +166,8 @@ Feature: Test basic usage of one course in app
     And I press "Test workshop name" in the app
     Then the header should be "Test workshop name" in the app
 
+  # Skipped for MDL-80460.
+  @ci_jenkins_skip
   Scenario: View section contents
     When I entered the course "Course 1" as "student1" in the app
     Then the header should be "Course 1" in the app
@@ -342,6 +344,8 @@ Feature: Test basic usage of one course in app
     When I press "Test glossary" in the app
     Then the header should be "Test glossary" in the app
 
+  # Skipped for MDL-80460.
+  @ci_jenkins_skip
   Scenario: Navigation between sections using the bottom arrows
     When I entered the course "Course 1" as "student1" in the app
     Then the header should be "Course 1" in the app
