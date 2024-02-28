@@ -88,8 +88,9 @@ Feature: Test basic usage of one course in app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
     And I should find "Test external name" in the app
-    And I should find "Test survey name" in the app
-    And I should find "Test chat name" in the app
+    # Commented for MDL-80866.
+    # And I should find "Test survey name" in the app
+    # And I should find "Test chat name" in the app
     And I should find "Quiz 1" in the app
     And I should find "Test scorm name" in the app
     And I should find "Test feedback name" in the app
@@ -121,9 +122,10 @@ Feature: Test basic usage of one course in app
     And I press "Test forum name" in the app
     Then the header should be "Test forum name" in the app
 
-    When I press the back button in the app
-    And I press "Test chat name" in the app
-    Then the header should be "Test chat name" in the app
+    # Commented for MDL-80866.
+    # When I press the back button in the app
+    # And I press "Test chat name" in the app
+    # Then the header should be "Test chat name" in the app
 
     When I press the back button in the app
     And I press "Web links" in the app
@@ -146,9 +148,10 @@ Feature: Test basic usage of one course in app
     And I press "Quiz 1" in the app
     Then the header should be "Quiz 1" in the app
 
-    When I press the back button in the app
-    And I press "Test survey name" in the app
-    Then the header should be "Test survey name" in the app
+    # Commented for MDL-80866.
+    # When I press the back button in the app
+    # And I press "Test survey name" in the app
+    # Then the header should be "Test survey name" in the app
 
     When I press the back button in the app
     And I press "Test wiki name" in the app
@@ -442,8 +445,9 @@ Feature: Test basic usage of one course in app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
     And I should find "Test external name" in the app
-    And I should find "Test survey name" in the app
-    And I should find "Test chat name" in the app
+    # Commented for MDL-80866.
+    # And I should find "Test survey name" in the app
+    # And I should find "Test chat name" in the app
     And I should find "Quiz 1" in the app
     And I should find "Test scorm name" in the app
     And I should find "Test feedback name" in the app
@@ -464,8 +468,9 @@ Feature: Test basic usage of one course in app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
     And I should find "Test external name" in the app
-    And I should find "Test survey name" in the app
-    And I should find "Test chat name" in the app
+    # Commented for MDL-80866.
+    # And I should find "Test survey name" in the app
+    # And I should find "Test chat name" in the app
     And I should find "Quiz 1" in the app
     And I should find "Test scorm name" in the app
     And I should find "Test feedback name" in the app

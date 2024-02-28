@@ -1,4 +1,5 @@
-@mod @mod_chat @app @javascript
+# Skipped for MDL-80866.
+@mod @mod_chat @app @javascript @ci_jenkins_skip
 Feature: Test basic usage of chat in app
   As a student
   I need basic chat functionality to work
