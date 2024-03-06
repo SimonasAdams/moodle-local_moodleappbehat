@@ -1,5 +1,4 @@
-# Skipped for MDL-80866.
-@mod @mod_chat @app @javascript @ci_jenkins_skip
+@mod @mod_chat @app @javascript
 Feature: Test chat navigation
 
   Background:
