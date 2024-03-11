@@ -20,8 +20,6 @@ Feature: Check relative dates feature.
       | assign   | C1     | assign1  | Assignment 1 | ## 20 January 2022 ##    | ## 31 July 2022 ##             | 1       |
       | assign   | C1     | assign2  | Assignment 2 | ## 1 December 2021 ##    | ## 31 January 2023 10:00 AM ## | 2       |
 
-  # Skipped for MDL-80460.
-  @ci_jenkins_skip
   Scenario: Relative dates (student)
     Given I entered the course "Course 1" as "student1" in the app
     When I press "Course index" in the app
@@ -34,8 +32,6 @@ Feature: Check relative dates feature.
     And I should find "1 December 2021, 12:00 AM" near "Opened:" in the app
     And I should find "31 January 2023, 10:00 AM" near "Due:" in the app
 
-  # Skipped for MDL-80460.
-  @ci_jenkins_skip
   Scenario: Relative dates (teacher)
     Given I entered the course "Course 1" as "teacher1" in the app
     When I press "Course index" in the app
