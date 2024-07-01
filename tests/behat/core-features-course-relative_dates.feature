@@ -1,10 +1,11 @@
-@core @core_course @app @javascript @lms_from4.0
+@core_course @app @javascript @lms_from4.4
 Feature: Check relative dates feature.
 
   Background:
-    Given the following config values are set as admin:
+    Given the Moodle site is compatible with this feature
+    And the following config values are set as admin:
       | enablecourserelativedates | 1 |
-    Given the following "users" exist:
+    And the following "users" exist:
       | username | firstname | lastname | email                |
       | student1 | Student   | 1        | student1@example.com |
       | teacher1 | Student   | 1        | student1@example.com |

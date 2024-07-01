@@ -18,7 +18,9 @@
 
 require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
 
+use Behat\Behat\Hook\Scope\ScenarioScope;
 use Behat\Mink\Exception\DriverException;
+use Behat\Mink\Exception\ExpectationException;
 use Moodle\BehatExtension\Exception\SkippedException;
 
 /**
@@ -234,14 +236,14 @@ class behat_app_helper extends behat_base {
 
             $this->runtime_js("init($initoptions)");
         } catch (Exception $error) {
-            throw new DriverException('Moodle App not running or not running on Automated mode.');
+            throw new DriverException('Moodle App not running or not running on Automated mode: ' . $error->getMessage());
         }
 
         if ($restart) {
             // Assert initial page.
             $this->spin(function($context) {
                 $page = $context->getSession()->getPage();
-                $element = $page->find('xpath', '//page-core-login-site//input[@name="url"]');
+                $element = $page->find('xpath', '//page-core-login-site');
 
                 if ($element) {
                     // Login screen found.
@@ -292,6 +294,8 @@ class behat_app_helper extends behat_base {
     /**
      * Replaces $WWWROOT for the url of the Moodle site.
      *
+     * Using $WWWROOTPATTERN will replace it for a regex pattern.
+     *
      * @Transform /^(.*\$WWWROOT.*)$/
      * @param string $text Text.
      * @return string
@@ -299,7 +303,10 @@ class behat_app_helper extends behat_base {
     public function replace_wwwroot($text) {
         global $CFG;
 
-        return str_replace('$WWWROOT', $CFG->behat_wwwroot, $text);
+        $text = str_replace('$WWWROOTPATTERN', preg_quote($CFG->behat_wwwroot, '/'), $text);
+        $text = str_replace('$WWWROOT', $CFG->behat_wwwroot, $text);
+
+        return $text;
     }
 
     /**
@@ -351,7 +358,7 @@ class behat_app_helper extends behat_base {
      * @return mixed Result.
      */
     protected function runtime_js(string $script) {
-        return $this->evaluate_script("window.behat.$script");
+        return $this->evaluate_script("window.behat?.$script");
     }
 
     /**
@@ -467,12 +474,128 @@ class behat_app_helper extends behat_base {
     }
 
     /**
+     * Get scenario slug.
+     *
+     * @param ScenarioScope $scope Scenario scope.
+     * @return string Slug.
+     */
+    protected function get_scenario_slug(ScenarioScope $scope): string {
+        $text = $scope->getFeature()->getTitle() . ' ' . $scope->getScenario()->getTitle();
+        $text = trim($text);
+        $text = strtolower($text);
+        $text = preg_replace('/\s+/', '-', $text);
+        $text = preg_replace('/[^a-z0-9-]/', '', $text);
+
+        return $text;
+    }
+
+    /**
      * Returns the current mobile url scheme of the site.
      */
     protected function get_mobile_url_scheme() {
         $mobilesettings = get_config('tool_mobile');
 
         return !empty($mobilesettings->forcedurlscheme) ? $mobilesettings->forcedurlscheme : 'moodlemobile';
+    }
+
+    /**
+     * Get user id corresponding to the given username in event logs.
+     *
+     * @param string $username User name, or "the system" to refer to a non-user actor such as the system, the cli, or a cron job.
+     * @return int Event user id.
+     */
+    protected function get_event_userid(string $username): int {
+        global $DB;
+
+        if ($username === 'the system') {
+            return \core\event\base::USER_OTHER;
+        }
+
+        if (str_starts_with($username, '"')) {
+            $username = substr($username, 1, -1);
+        }
+
+        $user = $DB->get_record('user', compact('username'));
+
+        if (is_null($user)) {
+            throw new ExpectationException("'$username' user not found", $this->getSession()->getDriver());
+        }
+
+        return $user->id;
+    }
+
+    /**
+     * Given event logs matching the given restrictions.
+     *
+     * @param array $event Event restrictions.
+     * @return array Event logs.
+     */
+    protected function get_event_logs(int $userid, array $event): array {
+        global $DB;
+
+        $filters = [
+            'origin' => 'ws',
+            'eventname' => $event['name'],
+            'userid' => $userid,
+            'courseid' => empty($event['course']) ? 0 : $this->get_course_id($event['course']),
+        ];
+
+        if (!empty($event['relateduser'])) {
+            $relateduser = $DB->get_record('user', ['username' => $event['relateduser']]);
+
+            $filters['relateduserid'] = $relateduser->id;
+        }
+
+        if (!empty($event['activity'])) {
+            $cm = $this->get_cm_by_activity_name_and_course($event['activity'], $event['activityname'], $event['course']);
+
+            $filters['contextinstanceid'] = $cm->id;
+        }
+
+        if (!empty($event['object'])) {
+            $namecolumns = [
+                'book_chapters' => 'title',
+                'glossary_entries' => 'concept',
+                'lesson_pages' => 'title',
+                'notifications' => 'subject',
+            ];
+
+            $field = $namecolumns[$event['object']] ?? 'shortname';
+            $object = $DB->get_record_select(
+                $event['object'],
+                $DB->sql_compare_text($field) . ' = ' . $DB->sql_compare_text('?'),
+                [$event['objectname']]
+            );
+
+            $filters['objectid'] = $object->id;
+        }
+
+        return $DB->get_records('logstore_standard_log', $filters);
+    }
+
+    /**
+     * Find a log matching the given other data.
+     *
+     * @param array $logs Event logs.
+     * @param array $other Other data.
+     * @return object Log matching the given other data, or null otherwise.
+     */
+    protected function find_event_log_with_other(array $logs, array $other): ?object {
+        foreach ($logs as $log) {
+            $logother = json_decode($log->other, true);
+
+            if (empty($logother)) {
+                continue;
+            }
+
+            if (!empty(array_diff_assoc($other, array_intersect_assoc($other, $logother)))) {
+                continue;
+            }
+
+            return $log;
+        }
+
+        return null;
     }
 
     /**
