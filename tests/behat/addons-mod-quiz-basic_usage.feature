@@ -160,6 +160,7 @@ Feature: Attempt a quiz in app
     And I should find "0 out of 100" within "Grade" "ion-item" in the app
     And I should be able to press "Review" in the app
 
+  @ci_jenkins_skip
   Scenario: Attempt a quiz (all question types)
     Given I entered the quiz activity "Quiz 2" on course "Course 1" as "student1" in the app
     When I press "Attempt quiz now" in the app
