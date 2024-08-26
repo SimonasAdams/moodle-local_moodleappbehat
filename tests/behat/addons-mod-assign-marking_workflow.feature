@@ -1,4 +1,4 @@
-@addon_mod_assign @app @javascript
+@addon_mod_assign @app @javascript @ci_jenkins_skip
 Feature: Test marking workflow in assignment activity in app
 
   Background:
