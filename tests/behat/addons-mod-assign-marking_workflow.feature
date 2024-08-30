@@ -1,4 +1,4 @@
-@addon_mod_assign @app @javascript @ci_jenkins_skip
+@addon_mod_assign @app @javascript @lms_from4.5
 Feature: Test marking workflow in assignment activity in app
 
   Background:
@@ -43,7 +43,7 @@ Feature: Test marking workflow in assignment activity in app
       | assign1 | student4  | Dolor      |
     # Mark submissions.
     And I am on the "Group Assign" "assign activity" page logged in as teacher1
-    And I follow "View all submissions"
+    And I navigate to "Submissions" in current page administration
     And I change window size to "large"
     And I click on "Grade" "link" in the "Student1" "table_row"
     And I set the field "Grade out of 100" to "50"
@@ -52,7 +52,7 @@ Feature: Test marking workflow in assignment activity in app
     And I set the field "Notify student" to "0"
     And I press "Save changes"
     And I am on the "Group Assign" "assign activity" page
-    And I follow "View all submissions"
+    And I navigate to "Submissions" in current page administration
     And I click on "Grade" "link" in the "Student3" "table_row"
     And I set the field "Grade out of 100" to "30"
     And I set the field "Marking workflow state" to "Released"
